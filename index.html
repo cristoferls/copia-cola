@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ctrl+C 5.6</title>
+
+  <script>
+    const LINK_FAQ_TRABALHO = "https://feevaleedu.sharepoint.com/teams/FAQAtendimento/"; 
+
+    (function () {
+      try {
+        const t = localStorage.getItem('theme') || 'light';
+        document.documentElement.classList.add('theme-' + t);
+      } catch (e) {}
+    })();
+  </script>
+
+  <style>
+    :root {
+      --gap: 8px; --bar-height: 125px; --footer-height: 45px;
+      --page-bg: #fafafa; --text: #111; --bar-bg: #ffffff;
+      --bar-border: #e6e6e6; --btn-bg: #ffffff; --btn-border: #c6c6c6;
+      --btn-text: #111; --focus: #0067c0; --success: #22c55e; --danger: #ef4444; --radius: 6px;
+    }
+    .theme-dark {
+      --page-bg: #0f0f10; --text: #e9e9ea; --bar-bg: #1c1c20;
+      --bar-border: #2a2a2f; --btn-bg: #2a2a2f; --btn-border: #3a3a40;
+      --btn-text: #e9e9ea; --focus: #3b82f6; --success: #16a34a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif; font-size: 12px; margin: 0;
+      color: var(--text); background: var(--page-bg);
+      padding: calc(var(--bar-height) + 16px) 12px calc(var(--footer-height) + 16px);
+    }
+
+    .topbar {
+      position: fixed; inset: 0 0 auto 0; height: var(--bar-height);
+      background: var(--bar-bg); border-bottom: 1px solid var(--bar-border);
+      display: flex; flex-direction: column; gap: 6px; padding: 8px 12px; z-index: 1000;
+    }
+    .topbar-header { display: flex; align-items: center; justify-content: space-between; }
+    #appTitle { margin: 0; font-size: 18px; font-weight: 700; cursor: pointer; }
+    .topbar-actions { display: flex; gap: 6px; }
+    
+    .search-row { display: flex; gap: 8px; align-items: center; }
+    #searchInput { 
+      flex: 1; height: 32px; padding: 0 10px; border-radius: var(--radius); 
+      border: 1px solid var(--btn-border); background: var(--page-bg); color: var(--text); 
+      outline: none; margin-bottom: -2px;
+    }
+
+    .btn-top { 
+      height: 32px; min-width: 32px; font-size: 13px; font-weight: bold; border-radius: var(--radius); 
+      border: 1px solid var(--btn-border); background: var(--btn-bg); color: var(--text); 
+      cursor: pointer; display: flex; align-items: center; justify-content: center; 
+      text-decoration: none; padding: 0 12px; box-sizing: border-box;
+    }
+    .btn-top.icon { width: 32px; padding: 0; font-size: 16px; }
+    
+    .category-tabs { display: flex; gap: 10px; padding: 0; overflow-x: auto; scrollbar-width: none; align-items: center; }
+    .category-tabs::-webkit-scrollbar { display: none; }
+    .tab-btn { background: transparent; border: none; cursor: pointer; opacity: 0.5; font-size: 18px; padding: 4px 2px; border-bottom: 3px solid transparent; transition: 0.2s; }
+    .tab-btn.active { opacity: 1; border-bottom-color: var(--focus); }
+    .add-cat-btn { font-size: 18px; opacity: 0.4; cursor: pointer; background: none; border: none; color: var(--text); }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: var(--gap); align-items: stretch; }
+
+    .card-frase { position: relative; display: flex; flex-direction: column; }
+    .copiar {
+      flex: 1; width: 100%; padding: 12px 10px; font-size: 12px; min-height: 55px; 
+      background: var(--btn-bg); color: var(--btn-text); border: 1px solid var(--btn-border); border-radius: var(--radius);
+      cursor: pointer; display: flex; align-items: center; justify-content: center; text-align: center;
+      white-space: normal; word-break: break-word; overflow-wrap: anywhere; overflow: visible;
+    }
+    .copiar.clicado { background: var(--success) !important; color: #fff !important; }
+
+    .controls { position: absolute; top: 2px; right: 2px; display: flex; gap: 2px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease 0.5s; }
+    .card-frase:hover .controls { opacity: 1; pointer-events: auto; }
+    .btn-ctrl { width: 18px; height: 18px; font-size: 9px; border: 1px solid var(--btn-border); border-radius: 4px; cursor: pointer; background: var(--btn-bg); color: var(--text); }
+    
+    .theme-footer { position: fixed; inset: auto 0 0 0; height: var(--footer-height); background: var(--bar-bg); border-top: 1px solid var(--bar-border); display: flex; align-items: center; justify-content: space-between; padding: 0 12px; z-index: 1000; }
+    .btn-foot { padding: 4px 8px; font-size: 11px; font-weight: bold; border-radius: 4px; border: 1px solid var(--btn-border); background: var(--btn-bg); color: var(--text); cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-header">
+      <h1 id="appTitle" onclick="editarTitulo()">Clique-me</h1>
+      <div class="topbar-actions">
+        <button class="btn-top icon" onclick="exibirManual()" title="Ajuda">❓</button>
+        <button class="btn-top icon" onclick="adicionarFrase()" title="Adicionar frase">+</button>
+      </div>
+    </div>
+    <div class="search-row">
+      <input type="text" id="searchInput" placeholder="Filtrar frases..." autocomplete="off">
+      <a id="faqLink" href="#" target="_blank" class="btn-top">FAQ</a>
+    </div>
+    <div class="category-tabs" id="categoryTabs"></div>
+  </header>
+
+  <main class="grid" id="mainGrid"></main>
+  <div id="msg" style="position:fixed; left:12px; bottom:60px; font-size:11px; font-weight:700; color:#0a6b0a; background:var(--bar-bg); border:1px solid var(--bar-border); padding:6px 10px; border-radius:6px; opacity:0; transition:0.3s; pointer-events:none; z-index:2000;">Copiado! ✅</div>
+
+  <footer class="theme-footer">
+    <button class="btn-foot" onclick="alternarTema()">🌓</button>
+    <div style="display:flex; gap:8px;">
+      <button class="btn-foot" onclick="exportarDados()" title="Salvar">💾</button>
+      <input type="file" id="importInput" style="display:none" onchange="importarDados(event)">
+      <button class="btn-foot" onclick="document.getElementById('importInput').click()" title="Carregar">📂</button>
+      <button class="btn-foot" onclick="resetarTudo()" style="color:var(--danger)">RESET</button>
+    </div>
+  </footer>
+
+  <script>
+    // v5.6: Adicionado saudacaoComplemento aos dados padrão
+    const DADOS_PADRAO = { 
+      titulo: "Ctrl+C", 
+      categorias: { "Geral": "🏠" }, 
+      frases: { "Geral": ["Clique direito para editar!"] },
+      saudacaoComplemento: ", tudo bem? Como posso ajudar?" 
+    };
+    
+    let appData = JSON.parse(localStorage.getItem('ctrlc_data')) || DADOS_PADRAO;
+    let categoriaAtiva = null;
+
+    function salvar() { localStorage.setItem('ctrlc_data', JSON.stringify(appData)); }
+    function exibirManual() {
+      alert(
+        "COMO USAR O CTRL+C:\n\n" +
+        "• COPIAR: Clique normal no botão da frase.\n" +
+        "• ADICIONAR FRASE: Clique normal no + localizado no topo.\n" +
+        "• EDITAR FRASE: Clique com o BOTÃO DIREITO na frase.\n" +
+        "• ADICIONAR NOVA CATEGORIA: Clique normal no 🆕 na barra de categorias.\n" +
+        "• EDITAR CATEGORIA: Clique com o BOTÃO DIREITO no ícone da categoria.\n" +
+        "• REORDENAR/APAGAR: Pare o mouse sobre a frase por 1 segundo. Depois ◀ ou ▶ para mover, ✖ para apagar.\n" +
+        "• NAVEGAR: Se houver muitas categorias, arraste a barra para os lados.\n" +
+        "• SALVAR/ABRIR: Use o 💾(SALVAR) e 📂(ABRIR) no rodapé para manter sua personalização."
+      );
+    }
+
+    function renderizarTabs() {
+      const container = document.getElementById('categoryTabs');
+      container.innerHTML = "";
+      Object.entries(appData.categorias).forEach(([nome, emoji]) => {
+        const btn = document.createElement('button');
+        btn.className = `tab-btn ${nome === categoriaAtiva ? 'active' : ''}`;
+        btn.textContent = emoji; btn.title = nome;
+        btn.onclick = () => { categoriaAtiva = (categoriaAtiva === nome) ? null : nome; renderizar(); renderizarTabs(); };
+        btn.oncontextmenu = (e) => { e.preventDefault(); editarCategoria(nome); };
+        container.appendChild(btn);
+      });
+      const addBtn = document.createElement('button');
+      addBtn.className = "add-cat-btn"; addBtn.textContent = "🆕";
+      addBtn.onclick = adicionarCategoria;
+      addBtn.title = "Nova categoria";
+      addBtn.style = "opacity: 1"
+      container.appendChild(addBtn);
+    }
+
+    function renderizar(filtro = "") {
+      const grid = document.getElementById('mainGrid');
+      grid.innerHTML = "";
+      const f = filtro.toLowerCase();
+
+      // v5.6: Saudação Dinâmica Híbrida
+      const obterSaudacao = () => {
+        const h = new Date().getHours();
+        const prefixo = (h < 12) ? "Bom dia" : (h < 18) ? "Boa tarde" : "Boa noite";
+        return prefixo + (appData.saudacaoComplemento || ""); 
+      };
+
+      let lista = [];
+      if (!categoriaAtiva || f) {
+        lista.push({ texto: obterSaudacao(), cat: "Geral", isS: true });
+        Object.keys(appData.categorias).forEach(c => { (appData.frases[c] || []).forEach((t, i) => lista.push({ texto: t, cat: c, index: i })); });
+      } else {
+        if (categoriaAtiva === "Geral") lista.push({ texto: obterSaudacao(), cat: "Geral", isS: true });
+        (appData.frases[categoriaAtiva] || []).forEach((t, i) => lista.push({ texto: t, cat: categoriaAtiva, index: i }));
+      }
+
+      lista.forEach((item) => {
+        if (item.texto.toLowerCase().includes(f)) {
+          const div = document.createElement('div'); div.className = 'card-frase';
+          const btn = document.createElement('button'); btn.className = 'copiar'; btn.textContent = item.texto;
+          btn.onclick = () => {
+            navigator.clipboard.writeText(btn.textContent);
+            btn.classList.add('clicado');
+            document.getElementById('msg').style.opacity = '1';
+            setTimeout(() => { btn.classList.remove('clicado'); document.getElementById('msg').style.opacity = '0'; }, 800);
+          };
+
+          // v5.6: Permitir editar o complemento da saudação especial via clique direito
+          if (item.isS) {
+            btn.oncontextmenu = (e) => {
+              e.preventDefault();
+              const n = prompt("Personalize o complemento da saudação:", appData.saudacaoComplemento);
+              if (n !== null) { appData.saudacaoComplemento = n; salvar(); renderizar(); }
+            };
+          } else {
+            btn.oncontextmenu = (e) => { e.preventDefault(); const n = prompt("Editar:", item.texto); if(n) { appData.frases[item.cat][item.index] = n; salvar(); renderizar(); } };
+            const ctrl = document.createElement('div'); ctrl.className = 'controls';
+            const bL = document.createElement('button'); bL.className = 'btn-ctrl'; bL.textContent = '◀'; bL.onclick = () => mover(item.cat, item.index, -1);
+            const bR = document.createElement('button'); bR.className = 'btn-ctrl'; bR.textContent = '▶'; bR.onclick = () => mover(item.cat, item.index, 1);
+            const bD = document.createElement('button'); bD.className = 'btn-ctrl'; bD.textContent = '✖'; bD.style.color = 'var(--danger)'; bD.onclick = () => apagar(item.cat, item.index);
+            ctrl.append(bL, bR, bD); div.appendChild(ctrl);
+          }
+          div.appendChild(btn); grid.appendChild(div);
+        }
+      });
+    }
+
+    function mover(c, i, d) { const l = appData.frases[c]; const ni = i + d; if (ni >= 0 && ni < l.length) { [l[i], l[ni]] = [l[ni], l[i]]; salvar(); renderizar(); } }
+    function editarTitulo() { const n = prompt("Título:", appData.titulo); if (n) { appData.titulo = n; document.getElementById('appTitle').textContent = n; salvar(); } }
+    function adicionarCategoria() { const n = prompt("Nome:"); if (n) { appData.categorias[n] = prompt("Emoji:", "✨"); appData.frases[n] = []; salvar(); renderizarTabs(); } }
+    function editarCategoria(n) {
+      if(n !== "Geral") { if(confirm("Renomear?")) { const nn = prompt("Novo nome:", n); if(nn){ appData.categorias[nn]=appData.categorias[n]; appData.frases[nn]=appData.frases[n]; delete appData.categorias[n]; delete appData.frases[n]; } } else if(confirm("Apagar?")) { delete appData.categorias[n]; delete appData.frases[n]; } }
+      salvar(); renderizarTabs(); renderizar();
+    }
+    function adicionarFrase() { const t = prompt("Texto:"); if (t) { const c = prompt("Categoria:", categoriaAtiva || "Geral"); if(appData.categorias[c]){ appData.frases[c].push(t); salvar(); renderizar(); } } }
+    function apagar(c, i) { if (confirm("Apagar?")) { appData.frases[c].splice(i, 1); salvar(); renderizar(); } }
+    
+    function exportarDados() {
+      const nomeArquivo = appData.titulo.toLowerCase().replace(/\s+/g, '_');
+      const blob = new Blob([JSON.stringify(appData)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${nomeArquivo}.json`;
+      a.click();
+    }
+
+    function importarDados(e) { const r = new FileReader(); r.onload = (ev) => { try { appData = JSON.parse(ev.target.result); salvar(); location.reload(); } catch(e){ alert("Erro!"); } }; r.readAsText(e.target.files[0]); }
+    function resetarTudo() { if (confirm("Resetar?")) { localStorage.clear(); location.reload(); } }
+    function alternarTema() { const t = document.documentElement.classList.contains('theme-dark') ? 'light' : 'dark'; document.documentElement.className = 'theme-' + t; localStorage.setItem('theme', t); }
+
+    window.onload = () => { document.getElementById('faqLink').href = LINK_FAQ_TRABALHO; document.getElementById('appTitle').textContent = appData.titulo; renderizarTabs(); renderizar(); };
+    document.getElementById('searchInput').addEventListener('input', (e) => renderizar(e.target.value));
+    document.getElementById('searchInput').focus();
+  </script>
+</body>
+</html>
