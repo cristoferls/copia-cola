@@ -6,7 +6,7 @@
   <title>Ctrl+C 5.6</title>
 
   <script>
-    const LINK_FAQ_TRABALHO = "https://feevaleedu.sharepoint.com/teams/FAQAtendimento/"; 
+    const LINK_FAQ_TRABALHO = ""; 
 
     (function () {
       try {
@@ -120,7 +120,8 @@
       titulo: "Ctrl+C", 
       categorias: { "Geral": "🏠" }, 
       frases: { "Geral": ["Clique direito para editar!"] },
-      saudacaoComplemento: ", tudo bem? Como posso ajudar?" 
+      saudacaoComplemento: ", tudo bem? Como posso ajudar?",
+      urlFaq: ""
     };
     
     let appData = JSON.parse(localStorage.getItem('ctrlc_data')) || DADOS_PADRAO;
@@ -235,9 +236,18 @@
     function resetarTudo() { if (confirm("Resetar?")) { localStorage.clear(); location.reload(); } }
     function alternarTema() { const t = document.documentElement.classList.contains('theme-dark') ? 'light' : 'dark'; document.documentElement.className = 'theme-' + t; localStorage.setItem('theme', t); }
 
-    window.onload = () => { document.getElementById('faqLink').href = LINK_FAQ_TRABALHO; document.getElementById('appTitle').textContent = appData.titulo; renderizarTabs(); renderizar(); };
+    window.onload = () => { document.getElementById('faqLink').href = appData.urlFaq || "#"; document.getElementById('appTitle').textContent = appData.titulo; renderizarTabs(); renderizar(); };
     document.getElementById('searchInput').addEventListener('input', (e) => renderizar(e.target.value));
     document.getElementById('searchInput').focus();
+    document.getElementById('faqLink').oncontextmenu = (e) => {
+      e.preventDefault();
+      const novoLink = prompt("Cole o link interno do FAQ:", appData.urlFaq || "");
+      if (novoLink !== null) {
+        appData.urlFaq = novoLink;
+        salvar();
+        location.reload();
+      }
+    };
   </script>
 </body>
 </html>
