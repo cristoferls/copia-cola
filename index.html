@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ctrl+C 5.6</title>
+  <title>Ctrl+C 5.7</title>
 
   <script>
-    const LINK_FAQ_TRABALHO = ""; 
-
+    const LINK_FAQ_TRABALHO = "";
     (function () {
       try {
         const t = localStorage.getItem('theme') || 'light';
@@ -115,10 +114,9 @@
   </footer>
 
   <script>
-    // v5.6: Adicionado saudacaoComplemento aos dados padrão
     const DADOS_PADRAO = { 
-      titulo: "Ctrl+C", 
-      categorias: { "Geral": "🏠" }, 
+      titulo: "Click me",
+      categorias: { "Geral": "🏠" },
       frases: { "Geral": ["Clique direito para editar!"] },
       saudacaoComplemento: ", tudo bem? Como posso ajudar?",
       urlFaq: ""
@@ -165,8 +163,6 @@
       const grid = document.getElementById('mainGrid');
       grid.innerHTML = "";
       const f = filtro.toLowerCase();
-
-      // v5.6: Saudação Dinâmica Híbrida
       const obterSaudacao = () => {
         const h = new Date().getHours();
         const prefixo = (h < 12) ? "Bom dia" : (h < 18) ? "Boa tarde" : "Boa noite";
@@ -192,8 +188,6 @@
             document.getElementById('msg').style.opacity = '1';
             setTimeout(() => { btn.classList.remove('clicado'); document.getElementById('msg').style.opacity = '0'; }, 800);
           };
-
-          // v5.6: Permitir editar o complemento da saudação especial via clique direito
           if (item.isS) {
             btn.oncontextmenu = (e) => {
               e.preventDefault();
