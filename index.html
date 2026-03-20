@@ -72,7 +72,7 @@
       flex: 1; width: 100%; padding: 12px 10px; font-size: 12px; min-height: 55px; 
       background: var(--btn-bg); color: var(--btn-text); border: 1px solid var(--btn-border); border-radius: var(--radius);
       cursor: pointer; display: flex; align-items: center; justify-content: center; text-align: center;
-      white-space: normal; word-break: break-word; overflow-wrap: anywhere; overflow: visible;
+      white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere; overflow: visible;
     }
     .copiar.clicado { background: var(--success) !important; color: #fff !important; }
 
@@ -132,8 +132,8 @@
       alert(
         "COMO USAR O CTRL+C:\n\n" +
         "• COPIAR: Clique normal no botão da frase.\n" +
-        "• ADICIONAR FRASE: Clique normal no + localizado no topo.\n" +
-        "• EDITAR FRASE: Clique com o BOTÃO DIREITO na frase.\n" +
+        "• ADICIONAR FRASE: Clique normal no + localizado no topo. Use \\n para pular uma linha.\n" +
+        "• EDITAR FRASE: Clique com o BOTÃO DIREITO na frase. Use \\n para pular uma linha.\n" +
         "• ADICIONAR NOVA CATEGORIA: Clique normal no 🆕 na barra de categorias.\n" +
         "• EDITAR CATEGORIA: Clique com o BOTÃO DIREITO no ícone da categoria.\n" +
         "• REORDENAR/APAGAR: Pare o mouse sobre a frase por 1 segundo. Depois ◀ ou ▶ para mover, ✖ para apagar.\n" +
@@ -185,7 +185,7 @@
       lista.forEach((item) => {
         if (item.texto.toLowerCase().includes(f)) {
           const div = document.createElement('div'); div.className = 'card-frase';
-          const btn = document.createElement('button'); btn.className = 'copiar'; btn.textContent = item.texto;
+          const btn = document.createElement('button'); btn.className = 'copiar'; btn.textContent = item.texto.split('\\n').join('\n');
           btn.onclick = () => {
             navigator.clipboard.writeText(btn.textContent);
             btn.classList.add('clicado');
