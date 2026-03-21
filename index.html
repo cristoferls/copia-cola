@@ -183,7 +183,7 @@
           const div = document.createElement('div'); div.className = 'card-frase';
           const btn = document.createElement('button'); btn.className = 'copiar'; btn.textContent = item.texto.split('\\n').join('\n');
           btn.onclick = () => {
-            navigator.clipboard.writeText(btn.textContent);
+            navigator.clipboard.writeText(item.texto.split('\\n').join('\n'));
             btn.classList.add('clicado');
             document.getElementById('msg').style.opacity = '1';
             setTimeout(() => { btn.classList.remove('clicado'); document.getElementById('msg').style.opacity = '0'; }, 800);
