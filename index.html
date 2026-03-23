@@ -17,7 +17,7 @@
 
   <style>
     :root {
-      --gap: 8px; --bar-height: 125px; --footer-height: 45px;
+      --gap: 6px; --bar-height: 125px; --footer-height: 45px;
       --page-bg: #fafafa; --text: #111; --bar-bg: #ffffff;
       --bar-border: #e6e6e6; --btn-bg: #ffffff; --btn-border: #c6c6c6;
       --btn-text: #111; --focus: #0067c0; --success: #22c55e; --danger: #ef4444; --radius: 6px;
@@ -43,7 +43,7 @@
     #appTitle { margin: 0; font-size: 18px; font-weight: 700; cursor: pointer; }
     .topbar-actions { display: flex; gap: 6px; }
     
-    .search-row { display: flex; gap: 8px; align-items: center; }
+    .search-row { display: flex; gap: 6px; align-items: center; }
     #searchInput { 
       flex: 1; height: 32px; padding: 0 10px; border-radius: var(--radius); 
       border: 1px solid var(--btn-border); background: var(--page-bg); color: var(--text); 
@@ -58,7 +58,7 @@
     }
     .btn-top.icon { width: 32px; padding: 0; font-size: 16px; }
     
-    .category-tabs { display: flex; gap: 10px; padding: 0; overflow-x: auto; scrollbar-width: none; align-items: center; }
+    .category-tabs { display: flex; gap: 6px; padding: 0; overflow-x: auto; scrollbar-width: none; align-items: center; }
     .category-tabs::-webkit-scrollbar { display: none; }
     .tab-btn { background: transparent; border: none; cursor: pointer; opacity: 0.5; font-size: 18px; padding: 4px 2px; border-bottom: 3px solid transparent; transition: 0.2s; }
     .tab-btn.active { opacity: 1; border-bottom-color: var(--focus); }
@@ -68,7 +68,7 @@
 
     .card-frase { position: relative; display: flex; flex-direction: column; }
     .copiar {
-      flex: 1; width: 100%; padding: 12px 10px; font-size: 12px; min-height: 55px; 
+      flex: 1; width: 100%; padding: 12px 10px; font-size: 12px; min-height: 50px; 
       background: var(--btn-bg); color: var(--btn-text); border: 1px solid var(--btn-border); border-radius: var(--radius);
       cursor: pointer; display: flex; align-items: center; justify-content: center; text-align: center;
       white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere; overflow: visible;
@@ -105,7 +105,7 @@
 
   <footer class="theme-footer">
     <button class="btn-foot" onclick="alternarTema()">🌓</button>
-    <div style="display:flex; gap:8px;">
+    <div style="display:flex; gap:6px;">
       <button class="btn-foot" onclick="exportarDados()" title="Salvar">💾</button>
       <input type="file" id="importInput" style="display:none" onchange="importarDados(event)">
       <button class="btn-foot" onclick="document.getElementById('importInput').click()" title="Carregar">📂</button>
