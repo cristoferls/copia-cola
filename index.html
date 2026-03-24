@@ -191,11 +191,28 @@
           if (item.isS) {
             btn.oncontextmenu = (e) => {
               e.preventDefault();
-              const n = prompt("Personalize o complemento da saudação:", appData.saudacaoComplemento);
+              const n = prompt("Bom dia/tarde/noite automático. Personalise o restante:", appData.saudacaoComplemento);
               if (n !== null) { appData.saudacaoComplemento = n; salvar(); renderizar(); }
             };
           } else {
-            btn.oncontextmenu = (e) => { e.preventDefault(); const n = prompt("Editar:", item.texto); if(n) { appData.frases[item.cat][item.index] = n; salvar(); renderizar(); } };
+            btn.oncontextmenu = (e) => {
+              e.preventDefault();
+              const novoTexto = prompt("Editar:", item.texto);
+              if (novoTexto === null) return; // Utilizador cancelou
+              const novaCat = prompt("Categoria:", item.cat);
+              if (novaCat && appData.categorias[novaCat]) {
+                if (novaCat !== item.cat) {
+                  appData.frases[item.cat].splice(item.index, 1);
+                  appData.frases[novaCat].push(novoTexto);
+                } else {
+                  appData.frases[item.cat][item.index] = novoTexto;
+                }
+                salvar();
+                renderizar();
+              } else if (novaCat !== null) {
+                alert("Categoria não encontrada! Crie-a primeiro no botão 🆕.");
+              }
+            };
             const ctrl = document.createElement('div'); ctrl.className = 'controls';
             const bL = document.createElement('button'); bL.className = 'btn-ctrl'; bL.textContent = '◀'; bL.onclick = () => mover(item.cat, item.index, -1);
             const bR = document.createElement('button'); bR.className = 'btn-ctrl'; bR.textContent = '▶'; bR.onclick = () => mover(item.cat, item.index, 1);
@@ -211,8 +228,35 @@
     function editarTitulo() { const n = prompt("Título:", appData.titulo); if (n) { appData.titulo = n; document.getElementById('appTitle').textContent = n; salvar(); } }
     function adicionarCategoria() { const n = prompt("Nome:"); if (n) { appData.categorias[n] = prompt("Emoji:", "✨"); appData.frases[n] = []; salvar(); renderizarTabs(); } }
     function editarCategoria(n) {
-      if(n !== "Geral") { if(confirm("Renomear?")) { const nn = prompt("Novo nome:", n); if(nn){ appData.categorias[nn]=appData.categorias[n]; appData.frases[nn]=appData.frases[n]; delete appData.categorias[n]; delete appData.frases[n]; } } else if(confirm("Apagar?")) { delete appData.categorias[n]; delete appData.frases[n]; } }
-      salvar(); renderizarTabs(); renderizar();
+      if (n !== "Geral") {
+        if (confirm("Deseja editar esta categoria?")) {
+          const novoNome = prompt("Novo nome:", n);
+          if (novoNome) {
+            const novoEmoji = prompt("Novo Emoji:", appData.categorias[n]);
+            if (novoEmoji) {
+              if (novoNome !== n) {
+                appData.categorias[novoNome] = novoEmoji;
+                appData.frases[novoNome] = appData.frases[n];
+                delete appData.categorias[n];
+                delete appData.frases[n];
+                if (categoriaAtiva === n) categoriaAtiva = novoNome;
+              } else {
+                appData.categorias[n] = novoEmoji;
+              }
+            }
+          }
+        } else if (confirm("Deseja apagar a categoria e todas as suas frases?")) {
+          delete appData.categorias[n];
+          delete appData.frases[n];
+          if (categoriaAtiva === n) categoriaAtiva = null;
+        }
+      } else {
+        const emojiGeral = prompt("Mudar emoji da categoria Geral:", appData.categorias[n]);
+        if (emojiGeral) appData.categorias[n] = emojiGeral;
+      }
+      salvar();
+      renderizarTabs();
+      renderizar();
     }
     function adicionarFrase() { const t = prompt("Texto:"); if (t) { const c = prompt("Categoria:", categoriaAtiva || "Geral"); if(appData.categorias[c]){ appData.frases[c].push(t); salvar(); renderizar(); } } }
     function apagar(c, i) { if (confirm("Apagar?")) { appData.frases[c].splice(i, 1); salvar(); renderizar(); } }
