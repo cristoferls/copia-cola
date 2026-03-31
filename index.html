@@ -89,13 +89,13 @@
     <div class="topbar-header">
       <h1 id="appTitle" onclick="editarTitulo()">Clique-me</h1>
       <div class="topbar-actions">
-        <button class="btn-top icon" onclick="exibirManual()" title="Ajuda">❓</button>
         <button class="btn-top icon" onclick="adicionarFrase()" title="Adicionar frase">+</button>
+        <button class="btn-top icon" onclick="exibirManual()" title="Ajuda">❓</button>
       </div>
     </div>
     <div class="search-row">
       <input type="text" id="searchInput" placeholder="Filtrar frases..." autocomplete="off">
-      <a id="faqLink" href="#" target="_blank" class="btn-top">FAQ</a>
+      <a id="faqLink" href="#" target="_blank" class="btn-top" rel="noopener noreferrer">FAQ</a>
     </div>
     <div class="category-tabs" id="categoryTabs"></div>
   </header>
@@ -136,6 +136,7 @@
         "• EDITAR CATEGORIA: Clique com o BOTÃO DIREITO no ícone da categoria.\n" +
         "• REORDENAR/APAGAR: Pare o mouse sobre a frase por 1 segundo. Depois ◀ ou ▶ para mover, ✖ para apagar.\n" +
         "• NAVEGAR: Se houver muitas categorias, arraste a barra para os lados.\n" +
+        "• TÍTULO: Clique normal no título para personalizar.\n" +
         "• SALVAR/ABRIR: Use o 💾(SALVAR) e 📂(ABRIR) no rodapé para manter sua personalização."
       );
     }
