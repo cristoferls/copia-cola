@@ -126,6 +126,13 @@
     let categoriaAtiva = null;
 
     function salvar() { localStorage.setItem('ctrlc_data', JSON.stringify(appData)); }
+
+    function gerarTextoSaudacao() {
+      const h = new Date().getHours();
+      const prefixo = (h < 12) ? "Bom dia" : (h < 18) ? "Boa tarde" : "Boa noite";
+      return prefixo + (appData.saudacaoComplemento || "");
+    }
+
     function exibirManual() {
       alert(
         "COMO USAR O CTRL+C:\n\n" +
@@ -164,18 +171,13 @@
       const grid = document.getElementById('mainGrid');
       grid.innerHTML = "";
       const f = filtro.toLowerCase();
-      const obterSaudacao = () => {
-        const h = new Date().getHours();
-        const prefixo = (h < 12) ? "Bom dia" : (h < 18) ? "Boa tarde" : "Boa noite";
-        return prefixo + (appData.saudacaoComplemento || ""); 
-      };
 
       let lista = [];
       if (!categoriaAtiva || f) {
-        lista.push({ texto: obterSaudacao(), cat: "Geral", isS: true });
+        lista.push({ texto: gerarTextoSaudacao(), cat: "Geral", isS: true });
         Object.keys(appData.categorias).forEach(c => { (appData.frases[c] || []).forEach((t, i) => lista.push({ texto: t, cat: c, index: i })); });
       } else {
-        if (categoriaAtiva === "Geral") lista.push({ texto: obterSaudacao(), cat: "Geral", isS: true });
+        if (categoriaAtiva === "Geral") lista.push({ texto: gerarTextoSaudacao(), cat: "Geral", isS: true });
         (appData.frases[categoriaAtiva] || []).forEach((t, i) => lista.push({ texto: t, cat: categoriaAtiva, index: i }));
       }
 
@@ -183,13 +185,20 @@
         if (item.texto.toLowerCase().includes(f)) {
           const div = document.createElement('div'); div.className = 'card-frase';
           const btn = document.createElement('button'); btn.className = 'copiar'; btn.textContent = item.texto.split('\\n').join('\n');
+          
           btn.onclick = () => {
-            navigator.clipboard.writeText(item.texto.split('\\n').join('\n'));
+            const textoParaCopiar = btn.textContent;
+            navigator.clipboard.writeText(textoParaCopiar);
             btn.classList.add('clicado');
             document.getElementById('msg').style.opacity = '1';
             setTimeout(() => { btn.classList.remove('clicado'); document.getElementById('msg').style.opacity = '0'; }, 800);
           };
+
           if (item.isS) {
+            btn.onmouseenter = () => {
+                btn.textContent = gerarTextoSaudacao().split('\\n').join('\n');
+            };
+
             btn.oncontextmenu = (e) => {
               e.preventDefault();
               const n = prompt("Bom dia/tarde/noite automático. Personalise o restante:", appData.saudacaoComplemento);
@@ -199,7 +208,7 @@
             btn.oncontextmenu = (e) => {
               e.preventDefault();
               const novoTexto = prompt("Editar:", item.texto);
-              if (novoTexto === null) return; // Utilizador cancelou
+              if (novoTexto === null) return; 
               const novaCat = prompt("Categoria:", item.cat);
               if (novaCat && appData.categorias[novaCat]) {
                 if (novaCat !== item.cat) {
